@@ -1,28 +1,31 @@
-# Alive Studio HTTP to WebSocket Bridge
+# HTTP to WebSocket Bridge for Alive Studio
 
-HTTPリクエストをWebSocketメッセージに変換するブリッジアプリケーションです。Alive Studioの環境でHTTPとWebSocketの間の通信を可能にします。
+HTTPリクエストをWebSocketメッセージに変換するブリッジアプリケーションです。WebSocketが直接利用できない環境から、OBSとAlive Studioへの通信を可能にします。
 
-## 機能
+## 背景・目的
 
-- HTTPリクエストの受信とWebSocketへの転送
-- WebSocketへの自動接続と再接続処理
-- パラメータを受け取るRESTful API
-- システムの健全性をモニタリングするヘルスチェックエンドポイント
+OBSはWebSocket通信で内部へのアクセスを可能にしています。OBSのカスタムブラウザソース上で動作するAlive Studioは、WebSocketから受け取った特定の通信方法での通信に基づいて内部状態を変更します。
 
-## 技術スタック
+しかし、技術的な制約などによりWebSocketが直接利用できない環境があります。このプロジェクトは、そのような環境でもREST APIを通じてOBS/Alive Studioと通信できるようにするためのブリッジアプリケーションです。
 
-- TypeScript：型安全なコード開発
-- Express：APIサーバーフレームワーク
-- WebSocket：リアルタイム通信
-- Jest：ユニットテスト
-- Biome：コード品質管理
+## ユースケース
 
-## 前提条件
+主なユースケースの一つとして、**Max for Live**があります。[./examples/alive-studi-controller/](./examples/alive-studio-controller/)に実装例があります。
 
-- Node.js 16.x以上
-- WebSocketサーバーへのアクセス権限
-- OBS Studio（WebSocketプラグイン有効）
-- Alive Studioブラウザソースを含むOBSシーン
+Max for Liveからは以下のようなコードでHTTPリクエストを送信できます：
+
+```javascript
+function send(params) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "http://localhost:5001/send", true);
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  xhr.send("url=" + encodeURIComponent(params));
+}
+```
+
+そして下図のように上記のスクリプトにリクエスト内容を送信すると、WebSocketメッセージに変換してOBS/Alive Studioへ転送します。このようにして、WebSocketが使えない環境からもAlive Studioへの操作ができるようになります。
+
+![](./screenshot.png)
 
 ## インストール
 
@@ -33,9 +36,6 @@ cd alive-studio-http2ws
 
 # 依存関係をインストール
 npm install
-
-# TypeScriptをコンパイル
-npm run build
 ```
 
 ## 環境設定
@@ -43,8 +43,9 @@ npm run build
 `.env`ファイルを作成し、以下の変数を設定します：
 
 ```
-WEBSOCKET_URL=ws://localhost:8080  # WebSocketサーバーのURL
-SERVER_PORT=5001                   # このアプリケーションのポート番号
+OBS_PORT=4455                  # OBS WebSocketサーバーのポート
+OBS_PASSWORD=********          # OBS WebSocketサーバーのパスワード
+SERVER_PORT=5001               # このアプリケーションのポート番号
 ```
 
 ## 使用方法
@@ -54,9 +55,6 @@ SERVER_PORT=5001                   # このアプリケーションのポート�
 ```bash
 # 開発モード（自動再起動あり）
 npm run dev
-
-# 本番モード
-npm start
 ```
 
 ### APIエンドポイント
@@ -84,48 +82,10 @@ POST /send
 }
 ```
 
-#### ヘルスチェック
+Max for Liveなどからは、Content-Type: application/x-www-form-urlencodedで以下のように送信できます：
 
 ```
-GET /health
-```
-
-レスポンス例:
-
-```json
-{
-  "status": "ok",
-  "obsConnected": true,
-  "timestamp": "2023-04-06T12:34:56.789Z"
-}
-```
-
-## 開発
-
-### コードスタイルとリンティング
-
-```bash
-# コードのフォーマット
-npm run format
-
-# リンティング
-npm run lint
-
-# リンティング（自動修正あり）
-npm run lint:fix
-```
-
-### テスト
-
-```bash
-# すべてのテストを実行
-npm test
-
-# テストカバレッジを確認
-npm run test:coverage
-
-# 監視モードでテストを実行
-npm run test:watch
+url=background=blue&sound=on
 ```
 
 ## 貢献
@@ -136,12 +96,10 @@ npm run test:watch
 4. ブランチをPushする（`git push origin feature/amazing-feature`）
 5. Pull Requestを作成する
 
+## 著者
+
+Kentaro Kuribayashi
+
 ## ライセンス
 
-ISC
-
-## 謝辞
-
-- OBS Project - Open Broadcaster Software
-- OBS WebSocket - OBSのリモートコントロール機能を提供
-- Alive Project - Alive Studioの開発 
+MIT

@@ -1,5 +1,5 @@
 {
-  "name": "max-for-live-to-alive-studio",
+  "name": "alive-studio-http2ws",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
@@ -16,8 +16,8 @@
     "prepare": "npm run build"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Kentaro Kuribayashi",
+  "license": "MIT",
   "type": "commonjs",
   "description": "Bridge between Max for Live and Alive Studio via OBS",
   "dependencies": {
