@@ -1,12 +1,14 @@
 # HTTP to WebSocket Bridge for Alive Studio
 
-HTTPリクエストをWebSocketメッセージに変換するブリッジアプリケーションです。WebSocketが直接利用できない環境から、OBSとAlive Studioへの通信を可能にします。
+HTTPリクエストをWebSocketメッセージに変換するブリッジアプリケーションです。WebSocketが直接利用できない環境から、OBSへの通信とAlive Studioの操作を可能にします。
 
 ## 背景・目的
 
-OBSはWebSocket通信で内部へのアクセスを可能にしています。OBSのカスタムブラウザソース上で動作するAlive Studioは、WebSocketから受け取った特定の通信方法での通信に基づいて内部状態を変更します。
+OBSには、WebSocket通信で内部へのアクセスを可能にする機能があります。OBSが受け取った値を特定のソースにセットすると、Alive Studioは内部状態を変更します。しかし、技術的な制約などによりWebSocketが直接利用できない環境があります。このプロジェクトは、そのような環境でもREST APIを通じてOBSと通信し、Alive Studioへの操作を可能にするためのブリッジアプリケーションです。
 
-しかし、技術的な制約などによりWebSocketが直接利用できない環境があります。このプロジェクトは、そのような環境でもREST APIを通じてOBS/Alive Studioと通信できるようにするためのブリッジアプリケーションです。
+## 注意事項
+
+本リポジトリが用いているAlive Studioへの操作方法は、将来的に変更される可能性があります。ご注意ください。
 
 ## ユースケース
 
